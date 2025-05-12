@@ -1,0 +1,32 @@
+name: Configurando o Workflow acionado por push e executado a cada hora
+
+on:
+  push: # Acionado por evento de push para o repositório
+    branches:
+      - main
+  schedule:
+    - cron: '0 * * * *'  # Agendado para ser executado a cada hora
+
+jobs:
+  build:
+    runs-on: macos-latest  # Usando macOS como ambiente de execução
+
+    steps:
+    - name: Fazer checkout do código # Action pré-existente do GitHub
+      uses: actions/checkout@v4
+
+    - name: Instalar .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restaurar pacotes
+      run: dotnet restore github4women/github4women.csproj
+
+    - name: Compilar o projeto
+      run: dotnet build github4women/github4women.csproj --configuration Release
+
+    - name: Listar os arquivos # Script personalizado
+      run: |
+        echo "Listando arquivos no diretório do projeto:"
+        ls -la
